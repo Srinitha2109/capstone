@@ -17,9 +17,11 @@ public class ClaimController {
     }
 
     @PreAuthorize("hasRole('POLICYHOLDER')")
-    @PostMapping
-    public ResponseEntity<ClaimDTO> createClaim(@RequestBody ClaimDTO claim) {
-        return ResponseEntity.ok(claimService.createClaim(claim));
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<ClaimDTO> createClaim(
+            @RequestPart("claim") ClaimDTO claim,
+            @RequestPart(value = "documents", required = false) List<org.springframework.web.multipart.MultipartFile> documents) {
+        return ResponseEntity.ok(claimService.createClaim(claim, documents));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -59,6 +61,12 @@ public class ClaimController {
     @GetMapping("/claim-officer/{claimOfficerId}")
     public ResponseEntity<List<ClaimDTO>> getClaimsByClaimOfficer(@PathVariable Long claimOfficerId) {
         return ResponseEntity.ok(claimService.getClaimsByClaimOfficer(claimOfficerId));
+    }
+
+    @PreAuthorize("hasRole('POLICYHOLDER')")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ClaimDTO>> getClaimsByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(claimService.getClaimsByUserId(userId));
     }
 
     @PutMapping("/{id}")

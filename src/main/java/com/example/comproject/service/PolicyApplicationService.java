@@ -19,10 +19,12 @@ import com.example.comproject.exception.ResourceNotFoundException;
 import com.example.comproject.repository.AgentRepository;
 import com.example.comproject.repository.BusinessProfileRepository;
 import com.example.comproject.repository.ClaimOfficerRepository;
+import com.example.comproject.repository.ClaimRepository;
 import com.example.comproject.repository.PolicyApplicationRepository;
 import com.example.comproject.repository.PolicyRepository;
 import com.example.comproject.repository.UnderwriterRepository;
 import com.example.comproject.repository.UserRepository;
+import com.example.comproject.entity.Claim;
 
 @Service
 public class PolicyApplicationService {
@@ -33,6 +35,7 @@ public class PolicyApplicationService {
     private final AgentRepository agentRepository;
     private final UnderwriterRepository underwriterRepository;
     private final ClaimOfficerRepository claimOfficerRepository;
+    private final ClaimRepository claimRepository;
 
     public PolicyApplicationService(PolicyApplicationRepository policyApplicationRepository,
                                    UserRepository userRepository,
@@ -40,7 +43,8 @@ public class PolicyApplicationService {
                                    BusinessProfileRepository businessProfileRepository,
                                    AgentRepository agentRepository,
                                    UnderwriterRepository underwriterRepository,
-                                   ClaimOfficerRepository claimOfficerRepository) {
+                                   ClaimOfficerRepository claimOfficerRepository,
+                                   ClaimRepository claimRepository) {
         this.policyApplicationRepository = policyApplicationRepository;
         this.userRepository = userRepository;
         this.policyRepository = policyRepository;
@@ -48,6 +52,7 @@ public class PolicyApplicationService {
         this.agentRepository = agentRepository;
         this.underwriterRepository = underwriterRepository;
         this.claimOfficerRepository = claimOfficerRepository;
+        this.claimRepository = claimRepository;
     }
 
     // Step 1: Policyholder submits application
@@ -358,6 +363,14 @@ public class PolicyApplicationService {
             dto.setAnnualRevenue(app.getBusinessProfile().getAnnualRevenue());
             dto.setIndustry(app.getBusinessProfile().getIndustry());
         }
+
+        // Calculate total settled (paid-out) claim amounts for this application
+        BigDecimal settledTotal = claimRepository.findByPolicyApplicationId(app.getId()).stream()
+                .filter(c -> c.getStatus() == com.example.comproject.entity.Claim.ClaimStatus.SETTLED)
+                .map(Claim::getClaimAmount)
+                .filter(amt -> amt != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        dto.setTotalSettledAmount(settledTotal);
 
         return dto;
     }

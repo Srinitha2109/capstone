@@ -22,6 +22,9 @@ public class Claim {
 
     private BigDecimal claimAmount;
 
+    private java.time.LocalDate incidentDate;
+    private String incidentLocation;
+
     @Enumerated(EnumType.STRING)
     private ClaimStatus status;
 
@@ -45,6 +48,10 @@ public class Claim {
     public void setClaimAmount(BigDecimal claimAmount) { this.claimAmount = claimAmount; }
     public ClaimStatus getStatus() { return status; }
     public void setStatus(ClaimStatus status) { this.status = status; }
+    public java.time.LocalDate getIncidentDate() { return incidentDate; }
+    public void setIncidentDate(java.time.LocalDate incidentDate) { this.incidentDate = incidentDate; }
+    public String getIncidentLocation() { return incidentLocation; }
+    public void setIncidentLocation(String incidentLocation) { this.incidentLocation = incidentLocation; }
     public ClaimOfficer getClaimOfficer() { return claimOfficer; }
     public void setClaimOfficer(ClaimOfficer claimOfficer) { this.claimOfficer = claimOfficer; }
 }

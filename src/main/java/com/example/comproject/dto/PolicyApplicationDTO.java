@@ -23,6 +23,7 @@ public class PolicyApplicationDTO {
     private LocalDate nextPaymentDueDate;
     private String rejectionReason;
     private BigDecimal commissionAmount;
+    private BigDecimal totalSettledAmount;
 
     // Added for Agent Review
     private String businessName;
@@ -76,4 +77,6 @@ public class PolicyApplicationDTO {
     public void setIndustry(String industry) { this.industry = industry; }
     public String getPlanName() { return planName; }
     public void setPlanName(String planName) { this.planName = planName; }
+    public BigDecimal getTotalSettledAmount() { return totalSettledAmount; }
+    public void setTotalSettledAmount(BigDecimal totalSettledAmount) { this.totalSettledAmount = totalSettledAmount; }
 }

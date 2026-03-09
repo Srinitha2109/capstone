@@ -21,6 +21,7 @@ export interface PolicyApplication {
     rejectionReason?: string;
     commissionAmount?: number;
     planName?: string;
+    totalSettledAmount?: number;
 
     // Added for Agent Review
     businessName?: string;

@@ -1,21 +1,112 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { ClaimService, Claim } from '../../../../services/claim.service';
+import { AuthService } from '../../../../services/auth';
 
 @Component({
-    selector: 'app-policyholder-claims',
-    standalone: true,
-    template: `
-    <div class="card">
-      <h2>My Claims</h2>
-      <p>View and manage your insurance claims.</p>
-      <div class="no-data">
-        <span class="icon">🩹</span>
-        <p>No claims history found.</p>
-      </div>
+  selector: 'app-policyholder-claims',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="flex flex-col gap-6 w-full max-w-7xl mx-auto p-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-black text-burgundy tracking-tight">Claim History</h1>
+                <p class="text-sm text-slate-500 font-bold uppercase mt-1 tracking-tight">Monitor your submitted insurance claims</p>
+            </div>
+            <div class="bg-burgundy/5 px-6 py-3 rounded-2xl border border-burgundy/10 shadow-sm">
+                <span class="text-sm font-black text-burgundy">{{ claims().length }} Total Records</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200">
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Claim ID</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">App ID</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @for (claim of claims(); track claim.id) {
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-5">
+                                <span class="text-xs font-black text-burgundy tracking-tight">{{ claim.claimNumber }}</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase">{{ claim.policyApplicationId }}</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <p class="text-xs font-bold text-slate-700 line-clamp-1 truncate max-w-xs">{{ claim.description }}</p>
+                                <p class="text-[9px] font-black text-slate-400 uppercase mt-0.5">{{ claim.incidentDate | date:'mediumDate' }}</p>
+                            </td>
+                            <td class="px-6 py-5 text-right">
+                                <span class="text-xs font-black text-slate-700">{{ claim.claimAmount | currency }}</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="flex justify-center">
+                                    <span [ngClass]="getStatusClass(claim.status)"
+                                          class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border">
+                                        {{ claim.status }}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="5" class="py-24 text-center">
+                                <div class="flex flex-col items-center gap-4 text-slate-300">
+                                    <span class="text-5xl">🩹</span>
+                                    <p class="text-sm font-bold uppercase tracking-widest">No claims found</p>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
   `,
-    styles: [`
-    .no-data { text-align: center; padding: 40px; color: var(--text-secondary); }
-    .icon { font-size: 3rem; display: block; margin-bottom: 16px; }
+  styles: [`
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
   `]
 })
-export class ClaimsComponent { }
+export class ClaimsComponent implements OnInit {
+  private claimService = inject(ClaimService);
+  private authService = inject(AuthService);
+
+  claims = signal<Claim[]>([]);
+  isLoading = signal(true);
+
+  ngOnInit() {
+    this.loadClaims();
+  }
+
+  loadClaims() {
+    const user = this.authService.currentUser();
+    if (user && user.id) {
+      this.claimService.getClaimsByUserId(user.id).subscribe({
+        next: (data) => {
+          this.claims.set(data);
+          this.isLoading.set(false);
+        },
+        error: () => this.isLoading.set(false)
+      });
+    }
+  }
+
+  getStatusClass(status: string | undefined): string {
+    switch (status) {
+      case 'SUBMITTED': return 'bg-burgundy/20 text-burgundy border-burgundy/20';
+      case 'APPROVED': return 'bg-[#E6F9F3] text-[#00A389] border-[#D1F2E9]';
+      case 'REJECTED': return 'bg-rose-50 text-rose-600 border-rose-100';
+      case 'SETTLED': return 'bg-emerald-500 text-white border-emerald-600';
+      default: return 'bg-slate-100 text-slate-500 border-slate-200';
+    }
+  }
+}

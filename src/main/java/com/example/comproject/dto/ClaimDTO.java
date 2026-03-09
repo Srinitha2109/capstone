@@ -9,6 +9,8 @@ public class ClaimDTO {
     private Long policyApplicationId;
     private String description;
     private BigDecimal claimAmount;
+    private java.time.LocalDate incidentDate;
+    private String incidentLocation;
     private Claim.ClaimStatus status;
     private Long claimOfficerId;
 
@@ -24,6 +26,10 @@ public class ClaimDTO {
     public void setClaimAmount(BigDecimal claimAmount) { this.claimAmount = claimAmount; }
     public Claim.ClaimStatus getStatus() { return status; }
     public void setStatus(Claim.ClaimStatus status) { this.status = status; }
+    public java.time.LocalDate getIncidentDate() { return incidentDate; }
+    public void setIncidentDate(java.time.LocalDate incidentDate) { this.incidentDate = incidentDate; }
+    public String getIncidentLocation() { return incidentLocation; }
+    public void setIncidentLocation(String incidentLocation) { this.incidentLocation = incidentLocation; }
     public Long getClaimOfficerId() { return claimOfficerId; }
     public void setClaimOfficerId(Long claimOfficerId) { this.claimOfficerId = claimOfficerId; }
 }

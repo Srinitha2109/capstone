@@ -16,23 +16,48 @@ public class ClaimService {
     private final ClaimRepository claimRepository;
     private final PolicyApplicationRepository policyApplicationRepository;
     private final ClaimOfficerRepository claimOfficerRepository;
+    private final FileStorageService fileStorageService;
+    private final ClaimDocumentService claimDocumentService;
 
     public ClaimService(ClaimRepository claimRepository,
                        PolicyApplicationRepository policyApplicationRepository,
-                       ClaimOfficerRepository claimOfficerRepository) {
+                       ClaimOfficerRepository claimOfficerRepository,
+                       FileStorageService fileStorageService,
+                       ClaimDocumentService claimDocumentService) {
         this.claimRepository = claimRepository;
         this.policyApplicationRepository = policyApplicationRepository;
         this.claimOfficerRepository = claimOfficerRepository;
+        this.fileStorageService = fileStorageService;
+        this.claimDocumentService = claimDocumentService;
     }
 
-    public ClaimDTO createClaim(ClaimDTO dto) {
+    public ClaimDTO createClaim(ClaimDTO dto, List<org.springframework.web.multipart.MultipartFile> documents) {
         Claim claim = new Claim();
         claim.setClaimNumber(generateClaimNumber());
         claim.setPolicyApplication(policyApplicationRepository.findById(dto.getPolicyApplicationId()).orElseThrow());
         claim.setDescription(dto.getDescription());
         claim.setClaimAmount(dto.getClaimAmount());
+        claim.setIncidentDate(dto.getIncidentDate());
+        claim.setIncidentLocation(dto.getIncidentLocation());
         claim.setStatus(Claim.ClaimStatus.SUBMITTED);
-        return toDTO(claimRepository.save(claim));
+        
+        Claim savedClaim = claimRepository.save(claim);
+        
+        if (documents != null && !documents.isEmpty()) {
+            for (org.springframework.web.multipart.MultipartFile file : documents) {
+                String fileName = fileStorageService.storeFile(file);
+                com.example.comproject.entity.ClaimDocument doc = new com.example.comproject.entity.ClaimDocument();
+                doc.setClaim(savedClaim);
+                doc.setFileName(file.getOriginalFilename());
+                doc.setFilePath(fileName);
+                doc.setFileType(file.getContentType());
+                doc.setFileSize(file.getSize());
+                doc.setUploadedAt(java.time.LocalDateTime.now());
+                claimDocumentService.uploadDocument(doc);
+            }
+        }
+        
+        return toDTO(savedClaim);
     }
 
     public ClaimDTO assignClaimOfficer(Long claimId, Long claimOfficerId) {
@@ -91,11 +116,20 @@ public class ClaimService {
         return claimRepository.findByClaimOfficerId(claimOfficerId).stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    public List<ClaimDTO> getClaimsByUserId(Long userId) {
+        return claimRepository.findAll().stream()
+                .filter(c -> c.getPolicyApplication().getUser().getId() == userId)
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
     public ClaimDTO updateClaim(Long id, ClaimDTO dto) {
         if (claimRepository.existsById(id)) {
             Claim claim = claimRepository.findById(id).orElseThrow();
             claim.setDescription(dto.getDescription());
             claim.setClaimAmount(dto.getClaimAmount());
+            claim.setIncidentDate(dto.getIncidentDate());
+            claim.setIncidentLocation(dto.getIncidentLocation());
             claim.setStatus(dto.getStatus());
             if (dto.getClaimOfficerId() != null) {
                 claim.setClaimOfficer(claimOfficerRepository.findById(dto.getClaimOfficerId()).orElse(null));
@@ -112,6 +146,8 @@ public class ClaimService {
         dto.setPolicyApplicationId(claim.getPolicyApplication().getId());
         dto.setDescription(claim.getDescription());
         dto.setClaimAmount(claim.getClaimAmount());
+        dto.setIncidentDate(claim.getIncidentDate());
+        dto.setIncidentLocation(claim.getIncidentLocation());
         dto.setStatus(claim.getStatus());
         if (claim.getClaimOfficer() != null) dto.setClaimOfficerId(claim.getClaimOfficer().getId());
         return dto;
