@@ -7,6 +7,7 @@ public class ClaimDTO {
     private Long id;
     private String claimNumber;
     private Long policyApplicationId;
+    private String policyNumber;
     private String description;
     private BigDecimal claimAmount;
     private java.time.LocalDate incidentDate;
@@ -20,6 +21,8 @@ public class ClaimDTO {
     public void setClaimNumber(String claimNumber) { this.claimNumber = claimNumber; }
     public Long getPolicyApplicationId() { return policyApplicationId; }
     public void setPolicyApplicationId(Long policyApplicationId) { this.policyApplicationId = policyApplicationId; }
+    public String getPolicyNumber() { return policyNumber; }
+    public void setPolicyNumber(String policyNumber) { this.policyNumber = policyNumber; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public BigDecimal getClaimAmount() { return claimAmount; }

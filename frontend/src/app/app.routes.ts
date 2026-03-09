@@ -55,5 +55,13 @@ export const routes: Routes = [
         ]
     },
     { path: 'underwriter/dashboard', component: UnderwriterComponent },
-    { path: 'claim-officer/dashboard', component: ClaimOfficerComponent },
+    {
+        path: 'claim-officer',
+        loadComponent: () => import('./pages/dashboards/claim-officer/claim-officer').then(m => m.ClaimOfficerComponent),
+        children: [
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+            { path: 'dashboard', loadComponent: () => import('./pages/dashboards/claim-officer/components/overview/overview.component').then(m => m.OverviewComponent) },
+            { path: 'requests', loadComponent: () => import('./pages/dashboards/claim-officer/components/requests/requests.component').then(m => m.RequestsComponent) },
+        ]
+    },
 ];

@@ -9,4 +9,8 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
     Optional<Claim> findByClaimNumber(String claimNumber);
     List<Claim> findByPolicyApplicationId(Long policyApplicationId);
     List<Claim> findByClaimOfficerId(Long claimOfficerId);
+
+    List<Claim> findByClaimOfficerIdOrPolicyApplicationClaimOfficerIdOrPolicyApplicationBusinessProfileClaimOfficerId(
+        Long id1, Long id2, Long id3
+    );
 }

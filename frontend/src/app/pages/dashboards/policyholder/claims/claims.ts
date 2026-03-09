@@ -24,30 +24,33 @@ import { AuthService } from '../../../../services/auth';
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Claim ID</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">App ID</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
+                            <th class="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Claim ID</th>
+                            <th class="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">App No.</th>
+                            <th class="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Incident Date</th>
+                            <th class="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
+                            <th class="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
+                            <th class="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @for (claim of claims(); track claim.id) {
                         <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-6 py-5">
-                                <span class="text-xs font-black text-burgundy tracking-tight">{{ claim.claimNumber }}</span>
+                            <td class="px-5 py-4">
+                                <span class="text-xs font-black text-[#8B1A3A]">{{ claim.claimNumber }}</span>
                             </td>
-                            <td class="px-6 py-5">
-                                <span class="text-[10px] font-bold text-slate-500 uppercase">{{ claim.policyApplicationId }}</span>
+                            <td class="px-5 py-4">
+                                <span class="text-xs font-bold text-[#8B1A3A]/70">{{ claim.policyNumber || claim.policyApplicationId }}</span>
                             </td>
-                            <td class="px-6 py-5">
-                                <p class="text-xs font-bold text-slate-700 line-clamp-1 truncate max-w-xs">{{ claim.description }}</p>
-                                <p class="text-[9px] font-black text-slate-400 uppercase mt-0.5">{{ claim.incidentDate | date:'mediumDate' }}</p>
+                            <td class="px-5 py-4">
+                                <span class="text-xs font-semibold text-slate-600">{{ claim.incidentDate | date:'mediumDate' }}</span>
                             </td>
-                            <td class="px-6 py-5 text-right">
+                            <td class="px-5 py-4">
+                                <p class="text-xs font-semibold text-slate-700 line-clamp-1 max-w-xs">{{ claim.description }}</p>
+                            </td>
+                            <td class="px-5 py-4 text-right">
                                 <span class="text-xs font-black text-slate-700">{{ claim.claimAmount | currency }}</span>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-5 py-4">
                                 <div class="flex justify-center">
                                     <span [ngClass]="getStatusClass(claim.status)"
                                           class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border">
@@ -58,9 +61,9 @@ import { AuthService } from '../../../../services/auth';
                         </tr>
                         } @empty {
                         <tr>
-                            <td colspan="5" class="py-24 text-center">
-                                <div class="flex flex-col items-center gap-4 text-slate-300">
-                                    <span class="text-5xl">🩹</span>
+                            <td colspan="6" class="py-20 text-center">
+                                <div class="flex flex-col items-center gap-3 text-slate-300">
+                                    <span class="text-4xl">🩹</span>
                                     <p class="text-sm font-bold uppercase tracking-widest">No claims found</p>
                                 </div>
                             </td>

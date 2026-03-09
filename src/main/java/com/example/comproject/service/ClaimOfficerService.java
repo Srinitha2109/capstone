@@ -29,6 +29,10 @@ public class ClaimOfficerService {
         return claimOfficerRepository.findById(id).orElse(null);
     }
 
+    public ClaimOfficer getClaimOfficerByUserId(Long userId) {
+        return claimOfficerRepository.findByUserId(userId).orElse(null);
+    }
+
     public List<ClaimOfficer> getAllClaimOfficers() {
         return claimOfficerRepository.findAll();
     }

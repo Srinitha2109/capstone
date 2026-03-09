@@ -23,96 +23,97 @@ import { FormsModule } from '@angular/forms';
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             @for (app of applications(); track app.id) {
-            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-burgundy/10 transition-all duration-500 overflow-hidden flex flex-col group">
-                <!-- Status Header -->
-                <div class="px-8 py-5 flex items-center justify-between border-b border-white/10" 
-                     [ngClass]="getStatusBg(app.status)">
-                    <span class="text-[11px] font-black uppercase tracking-[0.2em] text-white/90">{{ app.policyNumber }}</span>
-                    <span class="px-3 py-1 bg-white/20 text-white text-[10px] font-black uppercase rounded-lg backdrop-blur-md border border-white/20">
-                        {{ app.status }}
-                    </span>
+            <div class="bg-white rounded-xl border border-slate-100 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col group">
+                <!-- Status Header — light burgundy -->
+                <div class="px-5 py-3 flex items-center justify-between"
+                     style=" border-bottom: 1px solid #C17B8C30;">
+                    <span class="text-[10px] font-black uppercase tracking-widest" style="color: #8B1A3A;">{{ app.policyNumber }}</span>
+                    <span class="px-2.5 py-0.5 text-[9px] font-black uppercase rounded-md"
+                          style="background: #C17B8C30; color: #8B1A3A;">{{ app.status }}</span>
                 </div>
 
-                <div class="p-8 flex-1 flex flex-col gap-6">
+                <div class="p-5 flex-1 flex flex-col gap-4">
+                    <!-- Plan Name -->
                     <div>
-                        <h3 class="text-xl font-black text-slate-800 leading-tight group-hover:text-burgundy transition-colors uppercase tracking-tight">
+                        <h3 class="text-sm font-black text-slate-800 leading-tight uppercase tracking-tight group-hover:text-[#8B1A3A] transition-colors">
                             {{ app.planName || 'Insurance Plan' }}
                         </h3>
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mt-1.5 flex items-center gap-2">
-                             PLAN: {{ app.paymentPlan }}
-                        </p>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase mt-0.5">{{ app.paymentPlan }} Plan</p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300">
-                            <span class="block text-[9px] font-black uppercase text-slate-400 mb-1.5 tracking-widest">Coverage</span>
-                            <span class="text-base font-black text-slate-700">{{ app.selectedCoverageAmount | currency }}</span>
+                    <!-- Coverage & Premium inline -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-[#F9F0F3] p-3 rounded-lg">
+                            <span class="block text-[8px] font-black uppercase text-[#8B1A3A]/50 tracking-widest mb-0.5">Coverage</span>
+                            <span class="text-sm font-black text-[#8B1A3A]">{{ app.selectedCoverageAmount | currency }}</span>
                         </div>
-                        <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300">
-                            <span class="block text-[9px] font-black uppercase text-slate-400 mb-1.5 tracking-widest">Premium</span>
-                            <span class="text-base font-black text-burgundy">{{ app.premiumAmount | currency }}</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4 pt-2">
-                        <div class="flex justify-between items-center px-1">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Expiry Date</span>
-                            <span class="text-xs font-black text-burgundy">{{ (app.endDate | date:'mediumDate') || 'TBD' }}</span>
-                        </div>
-                        <div class="flex justify-between items-center px-1">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Next Payment Due</span>
-                            <span class="text-xs font-black text-slate-700">{{ app.nextPaymentDueDate ? (app.nextPaymentDueDate | date:'mediumDate') : 'Pending Payment' }}</span>
+                        <div class="bg-[#F9F0F3] p-3 rounded-lg">
+                            <span class="block text-[8px] font-black uppercase text-[#8B1A3A]/50 tracking-widest mb-0.5">Premium</span>
+                            <span class="text-sm font-black text-[#8B1A3A]">{{ app.premiumAmount | currency }}</span>
                         </div>
                     </div>
 
-                    <div class="mt-2 flex flex-col gap-3">
+                    <!-- Dates -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Expiry</span>
+                            <span class="text-[10px] font-bold text-slate-600">{{ (app.endDate | date:'mediumDate') || 'TBD' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Next Due</span>
+                            <span class="text-[10px] font-bold text-slate-600">{{ app.nextPaymentDueDate ? (app.nextPaymentDueDate | date:'mediumDate') : 'Pending' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col gap-2 mt-auto">
                         @if (isPaymentRequired(app)) {
                         <button (click)="payPremium(app)"
-                                class="w-full py-4 bg-burgundy text-white text-sm font-black rounded-2xl hover:bg-burgundy-secondary transition-all shadow-lg shadow-burgundy/20 flex items-center justify-center gap-3 group/btn hover:scale-[1.02] active:scale-95">
-                             <span class="text-lg group-btn:rotate-12 transition-transform">💳</span> 
-                             Pay Premium
+                                class="w-full py-2.5 text-white text-xs font-black rounded-lg transition-all flex items-center justify-center gap-2"
+                                style="background: #8B1A3A;">
+                            💳 Pay Premium
                         </button>
                         } @else if (app.status === 'ACTIVE') {
-                        <button class="w-full py-4 bg-[#E6F9F3] text-[#00A389] border border-[#D1F2E9] text-sm font-black rounded-2xl flex items-center justify-center gap-2 transition-all cursor-default">
-                             <span class="text-base">✅</span> 
-                             Paid (Next: {{ app.nextPaymentDueDate | date:'mediumDate' }})
+                        <button class="w-full py-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 text-xs font-black rounded-lg flex items-center justify-center gap-2 cursor-default">
+                            ✅ Paid
                         </button>
                         @if (getAvailableBalance(app) > 0) {
                         <button (click)="openClaimModal(app)"
-                                class="w-full py-3 bg-burgundy/5 text-burgundy border border-burgundy/10 text-xs font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-burgundy hover:text-white transition-all">
-                             <span>🆘</span> Raise Claim
+                                class="w-full py-2.5 text-xs font-black rounded-lg flex items-center justify-center gap-2 transition-all"
+                                style="background: #C17B8C20; color: #8B1A3A; border: 1px solid #C17B8C40;"
+                                onmouseover="this.style.background='#8B1A3A';this.style.color='white'"
+                                onmouseout="this.style.background='#C17B8C20';this.style.color='#8B1A3A'">
+                            🆘 Raise Claim
                         </button>
                         } @else {
-                        <div class="w-full py-3 bg-rose-50 border border-rose-100 text-rose-500 text-xs font-black rounded-2xl flex items-center justify-center gap-2 cursor-not-allowed">
-                            <span>🚫</span> Coverage Limit Reached
+                        <div class="w-full py-2.5 bg-rose-50 border border-rose-100 text-rose-400 text-xs font-black rounded-lg flex items-center justify-center gap-2">
+                            🚫 Coverage Limit Reached
                         </div>
                         }
                         } @else if (app.status === 'REJECTED') {
-                        <div class="bg-rose-50 p-4 rounded-2xl border border-rose-100">
-                            <span class="block text-[9px] font-black uppercase text-rose-400 mb-1 tracking-widest">Rejection Reason</span>
-                            <p class="text-xs font-bold text-rose-700 italic leading-relaxed">"{{ app.rejectionReason || 'No reason provided' }}"</p>
+                        <div class="bg-rose-50 p-3 rounded-lg border border-rose-100">
+                            <span class="block text-[8px] font-black uppercase text-rose-400 mb-0.5 tracking-widest">Reason</span>
+                            <p class="text-[10px] font-semibold text-rose-600 italic leading-snug">"{{ app.rejectionReason || 'No reason provided' }}"</p>
                         </div>
                         } @else {
-                        <div class="flex flex-col items-center justify-center gap-3 py-6 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
-                            <div class="flex gap-1.5">
-                                <div class="w-2 h-2 rounded-full bg-burgundy/20 animate-bounce" style="animation-delay: 0ms"></div>
-                                <div class="w-2 h-2 rounded-full bg-burgundy/40 animate-bounce" style="animation-delay: 150ms"></div>
-                                <div class="w-2 h-2 rounded-full bg-burgundy/60 animate-bounce" style="animation-delay: 300ms"></div>
-                            </div>
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Under Agent Review</span>
+                        <div class="flex items-center justify-center gap-2 py-2.5 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#8B1A3A]/30 animate-bounce" style="animation-delay: 0ms"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#8B1A3A]/50 animate-bounce" style="animation-delay: 150ms"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-[#8B1A3A]/70 animate-bounce" style="animation-delay: 300ms"></div>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Under Review</span>
                         </div>
                         }
                     </div>
                 </div>
             </div>
             } @empty {
-            <div class="col-span-full py-32 flex flex-col items-center justify-center bg-white rounded-[3rem] border-2 border-dashed border-slate-200 gap-6">
-                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-5xl grayscale opacity-50 shadow-inner">📄</div>
+            <div class="col-span-full py-20 flex flex-col items-center justify-center bg-white rounded-xl border-2 border-dashed border-slate-200 gap-4">
+                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-4xl opacity-50">📄</div>
                 <div class="text-center">
-                    <h3 class="text-2xl font-black text-slate-800 mb-2">No Applications Found</h3>
-                    <p class="text-slate-500 font-bold max-w-xs mx-auto leading-relaxed">Your journey to comprehensive protection starts here. Browse our available policies.</p>
+                    <h3 class="text-lg font-black text-slate-700 mb-1">No Applications</h3>
+                    <p class="text-slate-400 text-xs font-semibold">Browse available policies to get started.</p>
                 </div>
             </div>
             }
@@ -254,7 +255,7 @@ export class ApplicationsComponent implements OnInit {
   getStatusBg(status: string | undefined): string {
     switch (status) {
       case 'ACTIVE': return 'bg-burgundy';
-      case 'APPROVED': return 'bg-burgundy/80';
+      case 'APPROVED': return 'bg-burgundy/100';
       case 'REJECTED': return 'bg-rose-600';
       case 'SUBMITTED': return 'bg-burgundy/40';
       case 'UNDER_REVIEW': return 'bg-burgundy/60';

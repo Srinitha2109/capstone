@@ -4,6 +4,7 @@ import com.example.comproject.dto.ClaimDTO;
 import com.example.comproject.entity.Claim;
 import com.example.comproject.exception.InvalidOperationException;
 import com.example.comproject.exception.ResourceNotFoundException;
+import com.example.comproject.entity.PolicyApplication;
 import com.example.comproject.repository.ClaimOfficerRepository;
 import com.example.comproject.repository.ClaimRepository;
 import com.example.comproject.repository.PolicyApplicationRepository;
@@ -34,7 +35,15 @@ public class ClaimService {
     public ClaimDTO createClaim(ClaimDTO dto, List<org.springframework.web.multipart.MultipartFile> documents) {
         Claim claim = new Claim();
         claim.setClaimNumber(generateClaimNumber());
-        claim.setPolicyApplication(policyApplicationRepository.findById(dto.getPolicyApplicationId()).orElseThrow());
+        PolicyApplication app = policyApplicationRepository.findById(dto.getPolicyApplicationId()).orElseThrow();
+        claim.setPolicyApplication(app);
+        
+        if (app.getBusinessProfile() != null && app.getBusinessProfile().getClaimOfficer() != null) {
+            claim.setClaimOfficer(app.getBusinessProfile().getClaimOfficer());
+        } else if (app.getClaimOfficer() != null) {
+            claim.setClaimOfficer(app.getClaimOfficer());
+        }
+
         claim.setDescription(dto.getDescription());
         claim.setClaimAmount(dto.getClaimAmount());
         claim.setIncidentDate(dto.getIncidentDate());
@@ -113,7 +122,9 @@ public class ClaimService {
     }
 
     public List<ClaimDTO> getClaimsByClaimOfficer(Long claimOfficerId) {
-        return claimRepository.findByClaimOfficerId(claimOfficerId).stream().map(this::toDTO).collect(Collectors.toList());
+        return claimRepository.findByClaimOfficerIdOrPolicyApplicationClaimOfficerIdOrPolicyApplicationBusinessProfileClaimOfficerId(
+            claimOfficerId, claimOfficerId, claimOfficerId
+        ).stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     public List<ClaimDTO> getClaimsByUserId(Long userId) {
@@ -144,6 +155,7 @@ public class ClaimService {
         dto.setId(claim.getId());
         dto.setClaimNumber(claim.getClaimNumber());
         dto.setPolicyApplicationId(claim.getPolicyApplication().getId());
+        dto.setPolicyNumber(claim.getPolicyApplication().getPolicyNumber());
         dto.setDescription(claim.getDescription());
         dto.setClaimAmount(claim.getClaimAmount());
         dto.setIncidentDate(claim.getIncidentDate());

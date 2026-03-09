@@ -36,6 +36,13 @@ public class ClaimOfficerController {
         return claimOfficer != null ? ResponseEntity.ok(claimOfficer) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLAIM_OFFICER')")
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<ClaimOfficer> getClaimOfficerByUserId(@PathVariable Long userId) {
+        ClaimOfficer claimOfficer = claimOfficerService.getClaimOfficerByUserId(userId);
+        return claimOfficer != null ? ResponseEntity.ok(claimOfficer) : ResponseEntity.notFound().build();
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/available/{specialization}")
     public ResponseEntity<List<ClaimOfficer>> getAvailableClaimOfficersBySpecialization(@PathVariable String specialization) {
