@@ -1,11 +1,20 @@
 package com.example.comproject.controller;
 
-import com.example.comproject.dto.UserDTO;
-import com.example.comproject.service.UserService;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.comproject.dto.UserDTO;
+import com.example.comproject.service.UserService;
 
 @RestController
 @RequestMapping("/api")
@@ -22,21 +31,21 @@ public class UserController {
         return ResponseEntity.ok(userService.submitRegistrationRequest(user));
     }
 
-    // ✅ ADMIN - View pending registrations
+    // ADMIN - View pending registrations
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/registration-requests")
     public ResponseEntity<List<UserDTO>> getPendingRegistrations() {
         return ResponseEntity.ok(userService.getPendingRegistrations());
     }
 
-    // ✅ ADMIN - Approve registration
+    // ADMIN - Approve registration
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/registration-requests/{id}/approve")
     public ResponseEntity<UserDTO> approveRegistration(@PathVariable Long id) {
         return ResponseEntity.ok(userService.approveRegistration(id));
     }
 
-    // ✅ ADMIN - Reject registration
+    // ADMIN - Reject registration
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/registration-requests/{id}/reject")
     public ResponseEntity<UserDTO> rejectRegistration(@PathVariable Long id, @RequestBody String remarks) {

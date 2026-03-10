@@ -1,13 +1,22 @@
 package com.example.comproject.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.comproject.dto.AgentDTO;
 import com.example.comproject.dto.PolicyApplicationDTO;
 import com.example.comproject.service.AgentService;
 import com.example.comproject.service.PolicyApplicationService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/agents")
@@ -20,7 +29,7 @@ public class AgentController {
         this.agentService = agentService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')") //reads the role from security context in jwtAuthFilter
     @PostMapping
     public ResponseEntity<?> createAgent(@RequestBody AgentDTO agent) {
         try {

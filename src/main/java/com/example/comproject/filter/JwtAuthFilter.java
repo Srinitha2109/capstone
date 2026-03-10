@@ -1,9 +1,7 @@
 package com.example.comproject.filter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,9 +11,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.comproject.util.JwtUtil;
 
-import java.io.IOException;
-import java.util.List;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+//security class used to authenticate users using jwtutil 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
@@ -35,9 +36,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String username = jwtUtil.extractUsername(token);
                 String role = jwtUtil.extractRole(token);
                 
+                //creates an authentication object for Spring Security so that only that particular user roles can only access endpoints
+                //SimpleGrantedAuthority("ROLE_" + role) - this tells Spring Security what permissions the user has.
+                //authorities is important for @preAuthorize because it checks if the user has the required role to access the endpoint
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    username, null, List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                    username, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)) //null password because with jwt authentication already token is validated 
                 );
+                //stores authentication in security context because for every controller we use @preAuthorize whether role is valid or not frmo here we will get 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }

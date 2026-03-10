@@ -23,7 +23,7 @@ import { NotificationService } from '../../../../../services/notification';
             <!-- Filter Bar -->
             <div class="p-6 bg-white border-b border-slate-100 flex flex-wrap gap-4 items-center">
                 <div class="relative flex-1 min-w-[300px]">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+                    
                     <input type="text" placeholder="Search policies by name or number..."
                         class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-pink/10 focus:border-pink transition-all"
                         [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)">
@@ -90,7 +90,6 @@ import { NotificationService } from '../../../../../services/notification';
                         <tr>
                             <td colspan="7" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center gap-2 opacity-40">
-                                    <span class="text-4xl">📭</span>
                                     <p class="font-bold text-slate-500">No policies matching your criteria.</p>
                                 </div>
                             </td>

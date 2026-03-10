@@ -19,7 +19,8 @@ import { Router } from '@angular/router';
             <span class="inline-block mt-3 px-3 py-1 bg-amber-100 text-amber-800 text-[10px] font-black uppercase rounded-full tracking-tighter shadow-sm">Action Required</span>
         </div>
 
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center">
+        <div (click)="navigateTo('users')"
+            class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors group">
             <span class="text-xs text-slate-500 font-bold uppercase tracking-widest text-center">Total Users</span>
             <span class="text-4xl font-black text-burgundy mt-2 text-center">{{ stats().totalUsers }}</span>
             <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Active Accounts</span>
@@ -82,8 +83,8 @@ export class OverviewComponent implements OnInit {
         pending: 0,
         totalUsers: 0,
         totalPolicies: 0,
-        activeAgents: 0,
-        pendingApplications: 0
+        // activeAgents: 0,
+        // pendingApplications: 0
     });
 
     recentRequests = signal<UserRequest[]>([]);
@@ -98,8 +99,8 @@ export class OverviewComponent implements OnInit {
             this.stats.update(s => ({ ...s, pending: data.length }));
         });
         this.adminService.getAllUsers().subscribe(users => {
-            const agentCount = users.filter(u => u.role === 'AGENT' && u.status === 'ACTIVE').length;
-            this.stats.update(s => ({ ...s, totalUsers: users.length, activeAgents: agentCount }));
+            // const agentCount = users.filter(u => u.role === 'AGENT' && u.status === 'ACTIVE').length;
+            this.stats.update(s => ({ ...s, totalUsers: users.length }));
         });
         this.policyService.getAllPolicies().subscribe(data => {
             this.stats.update(s => ({ ...s, totalPolicies: data.length }));
@@ -108,7 +109,7 @@ export class OverviewComponent implements OnInit {
 
     loadRecentRequests() {
         this.adminService.getPendingRegistrations().subscribe(data => {
-            this.recentRequests.set(data.slice(0, 3));
+            this.recentRequests.set(data.slice(0, 3)); //shows latest 3 pending requests 
         });
     }
 

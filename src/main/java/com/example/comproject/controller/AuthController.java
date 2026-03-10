@@ -31,18 +31,18 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        System.out.println("DEBUG: Incoming login request");
-        System.out.println("DEBUG: Email received: [" + request.getEmail() + "]");
-        System.out.println("DEBUG: Password received: [" + request.getPassword() + "]");
+       
+        System.out.println("Email received: [" + request.getEmail() + "]");
+        System.out.println("Password received: [" + request.getPassword() + "]");
 
         if (request.getEmail() == null || request.getEmail().isBlank()) {
-            System.err.println("DEBUG ERROR: Email is NULL or EMPTY");
+            System.err.println("Email is null or empty");
         }
         if (request.getPassword() == null || request.getPassword().isBlank()) {
-            System.err.println("DEBUG ERROR: Password is NULL or EMPTY");
+            System.err.println("Password is null or empty");
         }
 
-        // 1. Check hardcoded admin
+        //check hardcoded admin details
         if ("admin@shield.com".equals(request.getEmail()) 
                 && "admin123".equals(request.getPassword())) {
             String token = jwtUtil.generateToken("admin@shield.com", "ADMIN");
@@ -55,29 +55,29 @@ public class AuthController {
             return ResponseEntity.ok(response);
         }
 
-        // 2. Find user by email — not username
+        //find user by email 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-        // 3. Check if account is active
+        //check if account is active
         if (user.getStatus() != User.Status.ACTIVE) {
             throw new RuntimeException("Your account is not active. Please contact admin.");
         }
 
-        // 4. Check if password is set
+        //check if password is set
         if (user.getPassword() == null) {
             throw new RuntimeException("Account not fully activated. Please contact admin.");
         }
 
-        // 5. Validate password
+        //Validate password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
-        // 5. Generate token using email + role
+        // Generate token using email + role
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-        // 6. Build response
+        // Build response
         LoginResponseDTO response = new LoginResponseDTO();
         response.setToken(token);
         response.setRole(user.getRole().name());

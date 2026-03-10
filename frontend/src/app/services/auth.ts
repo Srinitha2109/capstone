@@ -21,11 +21,9 @@ export class AuthService {
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap((res: any) => {
-        // Map userId to id for frontend consistency
         if (res && res.userId) {
           res.id = res.userId;
         }
-        // Response is flattened DTO, so we set the whole response as current user
         this.currentUser.set(res);
         console.log('Login Response:', res);
         if (res.token) {

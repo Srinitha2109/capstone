@@ -105,7 +105,7 @@ export class AdminService {
     assignStaffToProfile(profileId: number, agentId: number, claimOfficerId: number): Observable<BusinessProfile> {
         return this.http.put<BusinessProfile>(
             `/api/business-profiles/${profileId}/assign-staff?agentId=${agentId}&claimOfficerId=${claimOfficerId}`,
-            {}
+            {}  //passing empty json body because data is passed through query params structure is (url,body)
         );
     }
 }

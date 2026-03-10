@@ -7,7 +7,6 @@ import { PolicyholderComponent } from './pages/dashboards/policyholder/policyhol
 import { AgentComponent } from './pages/dashboards/agent/agent';
 import { UnderwriterComponent } from './pages/dashboards/underwriter/underwriter';
 import { ClaimOfficerComponent } from './pages/dashboards/claim-officer/claim-officer';
-
 import { OverviewComponent } from './pages/dashboards/policyholder/overview/overview';
 import { PoliciesComponent } from './pages/dashboards/policyholder/policies/policies';
 import { ApplicationsComponent } from './pages/dashboards/policyholder/applications/applications';

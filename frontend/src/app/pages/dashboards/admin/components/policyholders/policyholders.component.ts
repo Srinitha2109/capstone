@@ -73,8 +73,8 @@ import { NotificationService } from '../../../../../services/notification';
         </div>
     </div>
 
-    <!-- Assignment Modal -->
-    @if (showProfileAssignModal()) {
+    <!-- Profile Assignment -->
+    @if (showProfileAssignment()) {
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] animate-in fade-in duration-200">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 border border-slate-200">
             <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -82,7 +82,7 @@ import { NotificationService } from '../../../../../services/notification';
                     <h2 class="text-lg font-extrabold text-burgundy tracking-tight">Staff Assignment</h2>
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{{ selectedProfile()?.userFullName }}</p>
                 </div>
-                <button (click)="showProfileAssignModal.set(false)" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                <button (click)="showProfileAssignment.set(false)" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
                     <span class="text-xl font-bold">&times;</span>
                 </button>
             </div>
@@ -132,7 +132,7 @@ import { NotificationService } from '../../../../../services/notification';
 
             <div class="px-6 py-4 flex justify-end gap-3 bg-slate-50 border-t border-slate-100">
                 @if (assignmentStep() === 1) {
-                <button (click)="showProfileAssignModal.set(false)" class="px-5 py-2 text-slate-600 font-bold text-sm">Cancel</button>
+                <button (click)="showProfileAssignment.set(false)" class="px-5 py-2 text-slate-600 font-bold text-sm">Cancel</button>
                 <button (click)="goToSelectionStep()" class="px-6 py-2 bg-burgundy text-white font-bold rounded shadow hover:bg-burgundy-secondary">Next</button>
                 } @else {
                 <button (click)="assignmentStep.set(1)" class="px-5 py-2 text-slate-600 font-bold text-sm">Back</button>
@@ -152,7 +152,7 @@ export class PolicyholdersComponent implements OnInit {
     agents = signal<Agent[]>([]);
     claimOfficers = signal<ClaimOfficer[]>([]);
 
-    showProfileAssignModal = signal(false);
+    showProfileAssignment = signal(false);
     selectedProfile = signal<BusinessProfile | null>(null);
     profileSelectedAgentId = signal<number | null>(null);
     profileSelectedClaimOfficerId = signal<number | null>(null);
@@ -177,7 +177,7 @@ export class PolicyholdersComponent implements OnInit {
         this.assignmentStep.set(1);
         this.profileSelectedAgentId.set(null);
         this.profileSelectedClaimOfficerId.set(null);
-        this.showProfileAssignModal.set(true);
+        this.showProfileAssignment.set(true);
     }
 
     goToSelectionStep() {
@@ -201,7 +201,7 @@ export class PolicyholdersComponent implements OnInit {
             this.adminService.assignStaffToProfile(profile.id, agentId, officerId).subscribe({
                 next: () => {
                     this.notificationService.show('Personnel assigned successfully!', 'success');
-                    this.showProfileAssignModal.set(false);
+                    this.showProfileAssignment.set(false);
                     this.loadData();
                 },
                 error: () => this.notificationService.show('Failed to assign personnel.', 'error')

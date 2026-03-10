@@ -23,7 +23,6 @@ import { NotificationService } from '../../../../../services/notification';
                         <th class="px-6 py-4 text-left text-[10px] font-black text-burgundy uppercase tracking-widest">Full Name</th>
                         <th class="px-6 py-4 text-left text-[10px] font-black text-burgundy uppercase tracking-widest">Email</th>
                         <th class="px-6 py-4 text-left text-[10px] font-black text-burgundy uppercase tracking-widest">Role</th>
-                        <th class="px-6 py-4 text-left text-[10px] font-black text-burgundy uppercase tracking-widest">Profile</th>
                         <th class="px-6 py-4 text-left text-[10px] font-black text-burgundy uppercase tracking-widest">Action</th>
                     </tr>
                 </thead>

@@ -147,7 +147,7 @@ import { FormsModule } from '@angular/forms';
                 <div class="text-right">
                     <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Coverage Limit</span>
                     <p class="text-sm font-black text-slate-600">{{ selectedApp()?.selectedCoverageAmount | currency }}</p>
-                    <span class="text-[10px] font-semibold text-slate-400">Settled: {{ (selectedApp()?.totalSettledAmount || 0) | currency }}</span>
+                    
                 </div>
             </div>
 
