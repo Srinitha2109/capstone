@@ -366,7 +366,9 @@ public class PolicyApplicationService {
 
         // Calculate total settled (paid-out) claim amounts for this application
         BigDecimal settledTotal = claimRepository.findByPolicyApplicationId(app.getId()).stream()
-                .filter(c -> c.getStatus() == com.example.comproject.entity.Claim.ClaimStatus.SETTLED)
+                .filter(c -> c.getStatus() == com.example.comproject.entity.Claim.ClaimStatus.SETTLED || 
+                            c.getStatus() == com.example.comproject.entity.Claim.ClaimStatus.APPROVED ||
+                            c.getStatus() == com.example.comproject.entity.Claim.ClaimStatus.PARTIALLY_APPROVED)
                 .map(Claim::getClaimAmount)
                 .filter(amt -> amt != null)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

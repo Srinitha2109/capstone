@@ -1,16 +1,18 @@
 package com.example.comproject.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.example.comproject.dto.ClaimDTO;
 import com.example.comproject.entity.Claim;
+import com.example.comproject.entity.PolicyApplication;
 import com.example.comproject.exception.InvalidOperationException;
 import com.example.comproject.exception.ResourceNotFoundException;
-import com.example.comproject.entity.PolicyApplication;
 import com.example.comproject.repository.ClaimOfficerRepository;
 import com.example.comproject.repository.ClaimRepository;
 import com.example.comproject.repository.PolicyApplicationRepository;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ClaimService {
@@ -37,6 +39,20 @@ public class ClaimService {
         claim.setClaimNumber(generateClaimNumber());
         PolicyApplication app = policyApplicationRepository.findById(dto.getPolicyApplicationId()).orElseThrow();
         claim.setPolicyApplication(app);
+
+        // Check available coverage balance
+        java.math.BigDecimal totalSettled = claimRepository.findByPolicyApplicationId(app.getId()).stream()
+            .filter(c -> c.getStatus() == Claim.ClaimStatus.SETTLED || 
+                        c.getStatus() == Claim.ClaimStatus.APPROVED ||
+                        c.getStatus() == Claim.ClaimStatus.PARTIALLY_APPROVED)
+            .map(Claim::getClaimAmount)
+            .filter(amt -> amt != null)
+            .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        
+        java.math.BigDecimal availableBalance = app.getSelectedCoverageAmount().subtract(totalSettled);
+        if (dto.getClaimAmount().compareTo(availableBalance) > 0) {
+            throw new InvalidOperationException("Claim amount exceeds available coverage balance: " + availableBalance);
+        }
         
         if (app.getBusinessProfile() != null && app.getBusinessProfile().getClaimOfficer() != null) {
             claim.setClaimOfficer(app.getBusinessProfile().getClaimOfficer());
@@ -90,6 +106,22 @@ public class ClaimService {
         
         if (claim.getClaimOfficer() == null) {
             throw new InvalidOperationException("Claim officer must be assigned");
+        }
+
+        // Check available coverage balance before approval
+        PolicyApplication app = claim.getPolicyApplication();
+        java.math.BigDecimal currentTotalApproved = claimRepository.findByPolicyApplicationId(app.getId()).stream()
+            .filter(c -> (c.getStatus() == Claim.ClaimStatus.SETTLED || 
+                         c.getStatus() == Claim.ClaimStatus.APPROVED ||
+                         c.getStatus() == Claim.ClaimStatus.PARTIALLY_APPROVED) && 
+                         !c.getId().equals(claim.getId())) // Exclude self if already approved (unlikely but safe)
+            .map(Claim::getClaimAmount)
+            .filter(amt -> amt != null)
+            .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        
+        java.math.BigDecimal remainingBalance = app.getSelectedCoverageAmount().subtract(currentTotalApproved);
+        if (claim.getClaimAmount().compareTo(remainingBalance) > 0) {
+            throw new InvalidOperationException("Approving this claim would exceed the available coverage balance: " + remainingBalance);
         }
 
         claim.setStatus(Claim.ClaimStatus.APPROVED);

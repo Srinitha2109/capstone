@@ -46,8 +46,9 @@ import { FormsModule } from '@angular/forms';
                     <!-- Coverage & Premium inline -->
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-[#F9F0F3] p-3 rounded-lg">
-                            <span class="block text-[8px] font-black uppercase text-[#8B1A3A]/50 tracking-widest mb-0.5">Coverage</span>
-                            <span class="text-sm font-black text-[#8B1A3A]">{{ app.selectedCoverageAmount | currency }}</span>
+                            <span class="block text-[8px] font-black uppercase text-[#8B1A3A]/50 tracking-widest mb-0.5">Coverage Balance</span>
+                            <span class="text-sm font-black text-[#8B1A3A]">{{ getAvailableBalance(app) | currency }}</span>
+                            <p class="text-[8px] font-bold text-slate-400 mt-0.5 uppercase tracking-tighter">Limit: {{ app.selectedCoverageAmount | currency }}</p>
                         </div>
                         <div class="bg-[#F9F0F3] p-3 rounded-lg">
                             <span class="block text-[8px] font-black uppercase text-[#8B1A3A]/50 tracking-widest mb-0.5">Premium</span>
@@ -73,11 +74,11 @@ import { FormsModule } from '@angular/forms';
                         <button (click)="payPremium(app)"
                                 class="w-full py-2.5 text-white text-xs font-black rounded-lg transition-all flex items-center justify-center gap-2"
                                 style="background: #8B1A3A;">
-                            💳 Pay Premium
+                            Pay Premium
                         </button>
                         } @else if (app.status === 'ACTIVE') {
                         <button class="w-full py-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 text-xs font-black rounded-lg flex items-center justify-center gap-2 cursor-default">
-                            ✅ Paid
+                             Paid
                         </button>
                         @if (getAvailableBalance(app) > 0) {
                         <button (click)="openClaimModal(app)"
@@ -85,11 +86,11 @@ import { FormsModule } from '@angular/forms';
                                 style="background: #C17B8C20; color: #8B1A3A; border: 1px solid #C17B8C40;"
                                 onmouseover="this.style.background='#8B1A3A';this.style.color='white'"
                                 onmouseout="this.style.background='#C17B8C20';this.style.color='#8B1A3A'">
-                            🆘 Raise Claim
+                            Raise Claim
                         </button>
                         } @else {
                         <div class="w-full py-2.5 bg-rose-50 border border-rose-100 text-rose-400 text-xs font-black rounded-lg flex items-center justify-center gap-2">
-                            🚫 Coverage Limit Reached
+                            Coverage Limit Reached
                         </div>
                         }
                         } @else if (app.status === 'REJECTED') {
